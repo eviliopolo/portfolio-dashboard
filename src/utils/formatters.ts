@@ -1,12 +1,49 @@
 import { format } from 'date-fns';
 
-export function formatDate(dateString: string | Date): string {
+export function formatDate(dateString: string | Date | undefined | null): string {
+  if (!dateString) return '-';
+  
   try {
-    const date = typeof dateString === 'string' ? new Date(dateString) : dateString;
-    if (isNaN(date.getTime())) return dateString as string;
+    let date: Date;
+    
+    if (dateString instanceof Date) {
+      date = dateString;
+    } else if (typeof dateString === 'string') {
+      const trimmed = dateString.trim();
+      if (!trimmed || trimmed === '-' || trimmed === 'N/A' || trimmed === 'n/a') {
+        return '-';
+      }
+      
+      // Si ya está en formato YYYY-MM-DD, parsearlo directamente
+      if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) {
+        // Parsear manualmente para evitar problemas de zona horaria
+        const [year, month, day] = trimmed.split('-').map(Number);
+        date = new Date(year, month - 1, day);
+      } else {
+        // Intentar parsear como fecha
+        date = new Date(trimmed);
+      }
+    } else {
+      return '-';
+    }
+    
+    // Validar que la fecha sea válida
+    if (isNaN(date.getTime())) {
+      // Si no se puede parsear, devolver el string original si es razonable
+      if (typeof dateString === 'string' && dateString.length > 0) {
+        return dateString;
+      }
+      return '-';
+    }
+    
+    // Formatear la fecha
     return format(date, 'dd/MM/yyyy');
-  } catch {
-    return dateString as string;
+  } catch (error) {
+    // Si hay un error, intentar devolver el valor original si es un string
+    if (typeof dateString === 'string' && dateString.length > 0) {
+      return dateString;
+    }
+    return '-';
   }
 }
 

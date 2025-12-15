@@ -21,11 +21,22 @@ export default function DashboardGerencial({ data }: DashboardGerencialProps) {
       return horas > 0;
     });
 
+    // Validar y convertir Horas_Totales
+    let horasTotales = 0;
+    if (typeof proyecto.Horas_Totales === 'number') {
+      horasTotales = (proyecto.Horas_Totales > 0 && proyecto.Horas_Totales < 1000000) 
+        ? proyecto.Horas_Totales 
+        : 0;
+    } else if (typeof proyecto.Horas_Totales === 'string') {
+      const parsed = parseFloat(proyecto.Horas_Totales.replace(/[^\d.-]/g, ''));
+      horasTotales = isNaN(parsed) ? 0 : (parsed > 0 && parsed < 1000000 ? parsed : 0);
+    }
+
     return {
       proyecto: proyecto.Proyecto,
       recursosAsignados: recursosAsignados.length,
       recursos: recursosAsignados.map(r => r.Recurso),
-      horasTotales: proyecto.Horas_Totales || 0,
+      horasTotales: horasTotales,
       fechaEntrega: proyecto.Entrega,
       fechaInicio: proyecto.Inicio,
       fechaFin: proyecto.Fin,
@@ -36,7 +47,7 @@ export default function DashboardGerencial({ data }: DashboardGerencialProps) {
 
   // Calcular totales
   const totalProyectos = proyectos.length;
-  const totalHoras = proyectos.reduce((sum, p) => sum + (p.Horas_Totales || 0), 0);
+  const totalHoras = ocupacionPorProyecto.reduce((sum, p) => sum + (p.horasTotales || 0), 0);
   const totalRecursos = recursos.length;
 
   return (
@@ -137,9 +148,11 @@ export default function DashboardGerencial({ data }: DashboardGerencialProps) {
               {ocupacionPorProyecto.map((item, index) => {
                 const color = getProjectColor(item.proyecto);
                 const isAtrasado = item.estado === 'Atrasado';
-                const fechaEntrega = new Date(item.fechaEntrega);
+                const fechaEntrega = item.fechaEntrega ? new Date(item.fechaEntrega) : null;
                 const hoy = new Date();
-                const diasRestantes = Math.ceil((fechaEntrega.getTime() - hoy.getTime()) / (1000 * 60 * 60 * 24));
+                const diasRestantes = fechaEntrega && !isNaN(fechaEntrega.getTime())
+                  ? Math.ceil((fechaEntrega.getTime() - hoy.getTime()) / (1000 * 60 * 60 * 24))
+                  : null;
 
                 return (
                   <motion.tr
@@ -218,14 +231,20 @@ export default function DashboardGerencial({ data }: DashboardGerencialProps) {
                     <td className="px-6 py-4 text-center">
                       <div className="flex flex-col items-center gap-1">
                         <div className="flex items-center justify-center gap-2">
-                          <Calendar className={`w-4 h-4 ${isAtrasado ? 'text-accent-red' : diasRestantes < 7 ? 'text-accent-orange' : 'text-accent-green'}`} />
+                          <Calendar className={`w-4 h-4 ${
+                            !item.fechaEntrega ? 'text-text-secondary' :
+                            isAtrasado ? 'text-accent-red' : 
+                            diasRestantes !== null && diasRestantes < 7 ? 'text-accent-orange' : 'text-accent-green'
+                          }`} />
                           <span className={`font-rajdhani font-bold ${
-                            isAtrasado ? 'text-accent-red' : diasRestantes < 7 ? 'text-accent-orange' : 'text-accent-green'
+                            !item.fechaEntrega ? 'text-text-primary' :
+                            isAtrasado ? 'text-accent-red' : 
+                            diasRestantes !== null && diasRestantes < 7 ? 'text-accent-orange' : 'text-accent-green'
                           }`}>
                             {formatDate(item.fechaEntrega)}
                           </span>
                         </div>
-                        {!isAtrasado && (
+                        {!isAtrasado && item.fechaEntrega && diasRestantes !== null && (
                           <span className={`text-xs font-rajdhani ${
                             diasRestantes < 7 ? 'text-accent-orange' : 'text-text-secondary'
                           }`}>
