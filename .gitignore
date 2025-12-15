@@ -23,9 +23,3 @@ dist-ssr
 *.sln
 *.sw?
 
-# Excel files (datos sensibles)
-*.xlsx
-*.xls
-public/data/*.xlsx
-public/data/*.xls
-
