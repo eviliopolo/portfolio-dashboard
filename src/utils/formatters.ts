@@ -66,16 +66,17 @@ export function getStatusColor(ocupacion: number): 'good' | 'warning' | 'critica
 }
 
 export function getProjectColor(proyecto: string): string {
+  // Colores en escala de grises para estilo gerencial
   const colors: Record<string, string> = {
-    'XTAM VMS': '#e16162',
-    'Onvif': '#ffa500',
-    'Chatbot': '#00d2ff',
-    'Ceres': '#9b59b6',
-    'XTAM NOC': '#27ae60',
-    'Otros': '#f39c12',
-    'Informe': '#3498db',
-    'Control': '#e74c3c',
+    'XTAM VMS': '#000000',
+    'Onvif': '#333333',
+    'Chatbot': '#666666',
+    'Ceres': '#000000',
+    'XTAM NOC': '#333333',
+    'Otros': '#666666',
+    'Informe': '#000000',
+    'Control': '#333333',
   };
-  return colors[proyecto] || '#00d2ff';
+  return colors[proyecto] || '#000000';
 }
 

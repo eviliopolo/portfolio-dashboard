@@ -15,8 +15,13 @@ export function useExcelData(filePath: string) {
         const excelData = await readExcelFile(filePath);
         setData(excelData);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Error al cargar el archivo Excel');
+        const errorMessage = err instanceof Error ? err.message : 'Error desconocido al cargar el archivo Excel';
+        setError(`Error al cargar datos: ${errorMessage}`);
         console.error('Error loading Excel:', err);
+        console.error('Error details:', {
+          message: errorMessage,
+          stack: err instanceof Error ? err.stack : undefined
+        });
       } finally {
         setLoading(false);
       }

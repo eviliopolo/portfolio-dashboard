@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { TimelineData } from '../../types';
-import { formatDate } from '../../utils/formatters';
 import { differenceInDays, parseISO, startOfMonth, endOfMonth, eachDayOfInterval } from 'date-fns';
 
 interface GanttChartProps {

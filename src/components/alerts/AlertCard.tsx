@@ -26,34 +26,34 @@ export default function AlertCard({ type, title, description, severity, onClick 
       whileHover={{ scale: 1.02, x: 5 }}
       onClick={onClick}
       className={clsx(
-        'bg-bg-secondary p-4 rounded-lg border-2 cursor-pointer transition-all duration-300',
-        'relative overflow-hidden',
+        'bg-white p-4 rounded border cursor-pointer transition-all duration-300',
+        'relative shadow-report',
         severity === 'critical'
-          ? 'border-accent-red shadow-neon-red pulse-critical'
-          : 'border-accent-orange shadow-neon-orange'
+          ? 'border-text-primary bg-bg-tertiary'
+          : 'border-text-secondary bg-bg-secondary'
       )}
     >
       <div className="flex items-start gap-4">
         <div className={clsx(
-          'p-3 rounded-lg',
-          severity === 'critical' ? 'bg-accent-red/20' : 'bg-accent-orange/20'
+          'p-3 rounded',
+          severity === 'critical' ? 'bg-text-primary' : 'bg-text-secondary'
         )}>
           <Icon className={clsx(
             'w-6 h-6',
-            severity === 'critical' ? 'text-accent-red' : 'text-accent-orange'
+            severity === 'critical' ? 'text-white' : 'text-white'
           )} />
         </div>
         <div className="flex-1">
-          <h4 className="font-rajdhani font-bold text-text-primary mb-1">
+          <h4 className="font-sans font-semibold text-text-primary mb-1">
             {title}
           </h4>
-          <p className="text-sm text-text-secondary font-rajdhani">
+          <p className="text-sm text-text-secondary font-sans">
             {description}
           </p>
         </div>
         {onClick && (
-          <button className="px-3 py-1 text-xs font-rajdhani font-bold text-accent-cyan 
-                           border border-accent-cyan rounded hover:bg-accent-cyan/10 transition-colors">
+          <button className="px-3 py-1 text-xs font-sans font-semibold text-text-primary 
+                           border border-border-color rounded hover:bg-bg-tertiary transition-colors bg-white">
             Ver detalles
           </button>
         )}

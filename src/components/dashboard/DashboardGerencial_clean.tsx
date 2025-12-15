@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Briefcase, Clock, Users } from 'lucide-react';
+import { Briefcase, Calendar, Clock, Users } from 'lucide-react';
 import { ExcelData } from '../../types';
 import { formatDate, formatNumber } from '../../utils/formatters';
 import { getProjectColor } from '../../utils/formatters';
@@ -141,6 +141,11 @@ export default function DashboardGerencial({ data }: DashboardGerencialProps) {
               {ocupacionPorProyecto.map((item, index) => {
                 const color = getProjectColor(item.proyecto);
                 const isAtrasado = item.estado === 'Atrasado';
+                const fechaEntrega = item.fechaEntrega ? new Date(item.fechaEntrega) : null;
+                const hoy = new Date();
+                const diasRestantes = fechaEntrega && !isNaN(fechaEntrega.getTime())
+                  ? Math.ceil((fechaEntrega.getTime() - hoy.getTime()) / (1000 * 60 * 60 * 24))
+                  : null;
 
                 return (
                   <motion.tr

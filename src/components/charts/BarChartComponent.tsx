@@ -18,11 +18,11 @@ export default function BarChartComponent({ recursos }: BarChartComponentProps) 
 
   const getBarColor = (status: string) => {
     switch (status) {
-      case 'critical': return '#e16162';
-      case 'warning': return '#ffa500';
-      case 'normal': return '#00d2ff';
-      case 'good': return '#00ff87';
-      default: return '#00d2ff';
+      case 'critical': return '#000000';
+      case 'warning': return '#333333';
+      case 'normal': return '#666666';
+      case 'good': return '#999999';
+      default: return '#666666';
     }
   };
 
@@ -30,9 +30,9 @@ export default function BarChartComponent({ recursos }: BarChartComponentProps) 
     if (active && payload && payload.length) {
       const data = payload[0];
       return (
-        <div className="bg-bg-secondary border-2 border-accent-cyan rounded-lg p-3 shadow-neon-cyan">
-          <p className="font-rajdhani font-bold text-text-primary">{data.payload.name}</p>
-          <p className="font-orbitron text-accent-cyan">
+        <div className="bg-white border border-border-color rounded p-3 shadow-report">
+          <p className="font-sans font-semibold text-text-primary">{data.payload.name}</p>
+          <p className="font-sans text-text-primary">
             {formatPercentage(data.value)}
           </p>
         </div>
@@ -45,9 +45,9 @@ export default function BarChartComponent({ recursos }: BarChartComponentProps) 
     <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="bg-bg-secondary p-6 rounded-lg border-2 border-accent-cyan shadow-neon-cyan"
+      className="bg-white p-6 rounded border border-border-color shadow-report-md"
     >
-      <h3 className="text-xl font-rajdhani font-bold text-accent-cyan mb-6 uppercase">
+      <h3 className="text-xl font-sans font-bold text-text-primary mb-6 uppercase tracking-wide">
         Ocupación por Recurso
       </h3>
       <ResponsiveContainer width="100%" height={400}>
@@ -56,27 +56,27 @@ export default function BarChartComponent({ recursos }: BarChartComponentProps) 
           layout="vertical"
           margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
         >
-          <CartesianGrid strokeDasharray="3 3" stroke="#0f3460" />
+          <CartesianGrid strokeDasharray="3 3" stroke="#dee2e6" />
           <XAxis 
             type="number" 
             domain={[0, 120]}
-            stroke="#a6a6a6"
-            fontFamily="Rajdhani"
+            stroke="#666666"
+            fontFamily="Inter, sans-serif"
             tickFormatter={(value) => `${value}%`}
           />
           <YAxis 
             dataKey="name" 
             type="category" 
-            stroke="#a6a6a6"
-            fontFamily="Rajdhani"
+            stroke="#666666"
+            fontFamily="Inter, sans-serif"
             width={120}
           />
           <Tooltip content={<CustomTooltip />} />
           <ReferenceLine 
             x={100} 
-            stroke="#ffa500" 
+            stroke="#333333" 
             strokeDasharray="5 5" 
-            label={{ value: "100%", position: "top", fill: "#ffa500", fontFamily: "Rajdhani" }}
+            label={{ value: "100%", position: "top", fill: "#333333", fontFamily: "Inter, sans-serif" }}
           />
           <Bar 
             dataKey="ocupacion" 

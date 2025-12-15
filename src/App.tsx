@@ -16,9 +16,9 @@ function App() {
           <motion.div
             animate={{ rotate: 360 }}
             transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-            className="w-16 h-16 border-4 border-accent-cyan border-t-transparent rounded-full mx-auto mb-4"
+            className="w-16 h-16 border-4 border-accent-primary border-t-transparent rounded-full mx-auto mb-4"
           />
-          <div className="text-accent-cyan text-2xl font-orbitron animate-pulse">
+          <div className="text-accent-primary text-xl font-sans font-medium">
             Cargando Dashboard...
           </div>
         </motion.div>
@@ -29,12 +29,12 @@ function App() {
   if (error) {
     return (
       <div className="min-h-screen bg-bg-primary flex items-center justify-center">
-        <div className="text-center p-8 bg-bg-secondary border-2 border-accent-red rounded-lg">
-          <h2 className="text-2xl font-rajdhani font-bold text-accent-red mb-4">
+        <div className="text-center p-8 bg-bg-secondary border border-border-dark rounded-lg shadow-report-md max-w-md">
+          <h2 className="text-2xl font-sans font-bold text-text-primary mb-4">
             Error al cargar datos
           </h2>
           <p className="text-text-secondary">{error}</p>
-          <p className="text-text-secondary text-sm mt-4">
+          <p className="text-text-muted text-sm mt-4">
             Asegúrate de que el archivo DASHBOARD_PORTAFOLIO.xlsx esté en la carpeta public/data/
           </p>
         </div>
@@ -47,17 +47,15 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-bg-primary text-text-primary relative">
-      {/* Efecto de escaneo */}
-      <div className="scan-line" />
-
+    <div className="min-h-screen bg-white text-text-primary" style={{backgroundColor: '#ffffff'}}>
       {/* Main Content */}
-      <main className="container mx-auto p-6 space-y-12 pb-12 pt-6">
+      <main className="container mx-auto px-6 py-8 space-y-8 max-w-7xl bg-white" style={{backgroundColor: '#ffffff'}}>
         {/* Dashboard Gerencial - Informe Ejecutivo */}
         {data.proyectos && data.recursos && data.matriz && (
           <motion.section
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
+            className="report-section"
           >
             <DashboardGerencial data={data} />
           </motion.section>
@@ -65,13 +63,14 @@ function App() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-bg-secondary border-t-2 border-border-color p-6 mt-12">
-        <div className="container mx-auto text-center">
-          <p className="text-text-secondary font-rajdhani">
-            Portfolio Dashboard • Análisis Gerencial de Proyectos
-          </p>
-          <p className="text-text-muted text-sm mt-2">
-            Última actualización: {new Date().toLocaleDateString('es-ES')}
+      <footer className="border-t border-border-color py-6 mt-12">
+        <div className="container mx-auto text-center max-w-7xl">
+          <p className="text-text-muted text-xs font-sans">
+            Portfolio Dashboard • Última actualización: {new Date().toLocaleDateString('es-ES', { 
+              year: 'numeric', 
+              month: 'long', 
+              day: 'numeric' 
+            })}
           </p>
         </div>
       </footer>

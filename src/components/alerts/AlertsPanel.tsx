@@ -46,17 +46,17 @@ export default function AlertsPanel({ recursos, solapamientos, proyectos }: Aler
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="bg-bg-secondary p-6 rounded-lg border-2 border-accent-green shadow-neon-green"
+        className="bg-white p-6 rounded border border-border-color shadow-report"
       >
         <div className="flex items-center gap-3">
-          <div className="p-3 bg-accent-green/20 rounded-lg">
-            <AlertTriangle className="w-6 h-6 text-accent-green" />
+          <div className="p-3 bg-bg-tertiary rounded">
+            <AlertTriangle className="w-6 h-6 text-text-primary" />
           </div>
           <div>
-            <h3 className="font-rajdhani font-bold text-accent-green text-lg">
+            <h3 className="font-sans font-semibold text-text-primary text-lg">
               Sin Alertas Críticas
             </h3>
-            <p className="text-text-secondary text-sm">
+            <p className="text-text-muted text-sm font-sans">
               Todos los indicadores están dentro de los parámetros normales
             </p>
           </div>
@@ -72,8 +72,8 @@ export default function AlertsPanel({ recursos, solapamientos, proyectos }: Aler
       className="space-y-4"
     >
       <div className="flex items-center gap-3 mb-6">
-        <AlertTriangle className="w-6 h-6 text-accent-red" />
-        <h2 className="text-2xl font-rajdhani font-bold text-accent-red">
+        <AlertTriangle className="w-6 h-6 text-text-primary" />
+        <h2 className="text-xl font-sans font-bold text-text-primary">
           Alertas Críticas ({alerts.length})
         </h2>
       </div>

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowUpDown, ArrowDown, ArrowUp } from 'lucide-react';
+import { ArrowDown, ArrowUp } from 'lucide-react';
 import ProyectoCard from './ProyectoCard';
 import { Proyecto } from '../../types';
 
@@ -45,10 +45,10 @@ export default function ProyectosList({ proyectos }: ProyectosListProps) {
       <div className="mb-6 flex gap-2 flex-wrap">
         <button
           onClick={() => handleSort('Horas_Totales')}
-          className={`px-4 py-2 rounded border-2 font-rajdhani text-sm transition-all ${
+          className={`px-4 py-2 rounded border font-sans text-sm transition-all ${
             sortField === 'Horas_Totales'
-              ? 'border-accent-cyan text-accent-cyan bg-accent-cyan/10'
-              : 'border-border-color text-text-secondary hover:border-accent-cyan'
+              ? 'border-text-primary text-text-primary bg-bg-tertiary'
+              : 'border-border-color text-text-secondary hover:border-text-primary bg-white'
           }`}
         >
           <div className="flex items-center gap-2">
@@ -60,10 +60,10 @@ export default function ProyectosList({ proyectos }: ProyectosListProps) {
         </button>
         <button
           onClick={() => handleSort('Tareas')}
-          className={`px-4 py-2 rounded border-2 font-rajdhani text-sm transition-all ${
+          className={`px-4 py-2 rounded border font-sans text-sm transition-all ${
             sortField === 'Tareas'
-              ? 'border-accent-cyan text-accent-cyan bg-accent-cyan/10'
-              : 'border-border-color text-text-secondary hover:border-accent-cyan'
+              ? 'border-text-primary text-text-primary bg-bg-tertiary'
+              : 'border-border-color text-text-secondary hover:border-text-primary bg-white'
           }`}
         >
           <div className="flex items-center gap-2">
@@ -75,10 +75,10 @@ export default function ProyectosList({ proyectos }: ProyectosListProps) {
         </button>
         <button
           onClick={() => handleSort('Recursos')}
-          className={`px-4 py-2 rounded border-2 font-rajdhani text-sm transition-all ${
+          className={`px-4 py-2 rounded border font-sans text-sm transition-all ${
             sortField === 'Recursos'
-              ? 'border-accent-cyan text-accent-cyan bg-accent-cyan/10'
-              : 'border-border-color text-text-secondary hover:border-accent-cyan'
+              ? 'border-text-primary text-text-primary bg-bg-tertiary'
+              : 'border-border-color text-text-secondary hover:border-text-primary bg-white'
           }`}
         >
           <div className="flex items-center gap-2">

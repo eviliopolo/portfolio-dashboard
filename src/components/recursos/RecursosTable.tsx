@@ -22,10 +22,10 @@ export default function RecursosTable({ recursos }: RecursosTableProps) {
   const estados = Array.from(new Set(recursos.map(r => r.Estado)));
 
   const getOcupacionColor = (ocupacion: number) => {
-    if (ocupacion > 110) return 'bg-accent-red';
-    if (ocupacion >= 100) return 'bg-accent-orange';
-    if (ocupacion >= 85) return 'bg-accent-cyan';
-    return 'bg-accent-green';
+    if (ocupacion > 110) return 'bg-text-primary';
+    if (ocupacion >= 100) return 'bg-text-secondary';
+    if (ocupacion >= 85) return 'bg-text-muted';
+    return 'bg-border-dark';
   };
 
   return (
@@ -40,16 +40,16 @@ export default function RecursosTable({ recursos }: RecursosTableProps) {
               placeholder="Buscar recurso..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-bg-secondary border-2 border-border-color rounded-lg 
-                       text-text-primary focus:border-accent-cyan focus:outline-none font-rajdhani"
+              className="w-full pl-10 pr-4 py-2 bg-white border border-border-color rounded 
+                       text-text-primary focus:border-text-primary focus:outline-none font-sans"
             />
           </div>
         </div>
         <select
           value={filterEstado}
           onChange={(e) => setFilterEstado(e.target.value)}
-          className="px-4 py-2 bg-bg-secondary border-2 border-border-color rounded-lg 
-                   text-text-primary focus:border-accent-cyan focus:outline-none font-rajdhani"
+          className="px-4 py-2 bg-white border border-border-color rounded 
+                   text-text-primary focus:border-text-primary focus:outline-none font-sans"
         >
           <option value="all">Todos los estados</option>
           {estados.map((estado) => (
@@ -59,27 +59,27 @@ export default function RecursosTable({ recursos }: RecursosTableProps) {
       </div>
 
       {/* Tabla */}
-      <div className="bg-bg-secondary rounded-lg border-2 border-border-color overflow-hidden">
+      <div className="bg-white rounded border border-border-color overflow-hidden shadow-report-md">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b-2 border-border-color bg-bg-tertiary">
-                <th className="px-6 py-4 text-left font-rajdhani font-bold text-accent-cyan uppercase text-sm">
+              <tr className="border-b border-border-dark bg-bg-tertiary">
+                <th className="px-6 py-4 text-left font-sans font-semibold text-text-primary uppercase text-xs tracking-wider">
                   Recurso
                 </th>
-                <th className="px-6 py-4 text-left font-rajdhani font-bold text-accent-cyan uppercase text-sm">
+                <th className="px-6 py-4 text-left font-sans font-semibold text-text-primary uppercase text-xs tracking-wider">
                   Ocupación
                 </th>
-                <th className="px-6 py-4 text-left font-rajdhani font-bold text-accent-cyan uppercase text-sm">
+                <th className="px-6 py-4 text-left font-sans font-semibold text-text-primary uppercase text-xs tracking-wider">
                   Tareas
                 </th>
-                <th className="px-6 py-4 text-left font-rajdhani font-bold text-accent-cyan uppercase text-sm">
+                <th className="px-6 py-4 text-left font-sans font-semibold text-text-primary uppercase text-xs tracking-wider">
                   Proyectos
                 </th>
-                <th className="px-6 py-4 text-left font-rajdhani font-bold text-accent-cyan uppercase text-sm">
+                <th className="px-6 py-4 text-left font-sans font-semibold text-text-primary uppercase text-xs tracking-wider">
                   Solapamientos
                 </th>
-                <th className="px-6 py-4 text-left font-rajdhani font-bold text-accent-cyan uppercase text-sm">
+                <th className="px-6 py-4 text-left font-sans font-semibold text-text-primary uppercase text-xs tracking-wider">
                   Estado
                 </th>
               </tr>
@@ -96,16 +96,16 @@ export default function RecursosTable({ recursos }: RecursosTableProps) {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.05 }}
                     className={clsx(
-                      'border-b border-border-color hover:bg-bg-tertiary transition-colors',
-                      isCritical && 'bg-accent-red/5'
+                      'border-b border-border-color hover:bg-bg-secondary transition-colors',
+                      isCritical && 'bg-bg-tertiary'
                     )}
                   >
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
                         {isCritical && (
-                          <AlertTriangle className="w-4 h-4 text-accent-red animate-pulse" />
+                          <AlertTriangle className="w-4 h-4 text-text-primary" />
                         )}
-                        <span className="font-rajdhani font-semibold text-text-primary">
+                        <span className="font-sans font-semibold text-text-primary">
                           {recurso.Recurso}
                         </span>
                       </div>
@@ -113,7 +113,7 @@ export default function RecursosTable({ recursos }: RecursosTableProps) {
                     <td className="px-6 py-4">
                       <div className="space-y-1">
                         <div className="flex items-center justify-between text-sm">
-                          <span className="font-orbitron font-bold text-text-primary">
+                          <span className="font-sans font-semibold text-text-primary">
                             {formatPercentage(recurso.Ocupacion)}
                           </span>
                         </div>
@@ -128,15 +128,15 @@ export default function RecursosTable({ recursos }: RecursosTableProps) {
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <span className="font-rajdhani text-text-primary">{recurso.Tareas}</span>
+                      <span className="font-sans text-text-primary">{recurso.Tareas}</span>
                     </td>
                     <td className="px-6 py-4">
-                      <span className="font-rajdhani text-text-primary">{recurso.Proyectos}</span>
+                      <span className="font-sans text-text-primary">{recurso.Proyectos}</span>
                     </td>
                     <td className="px-6 py-4">
                       <span className={clsx(
-                        'font-rajdhani font-bold',
-                        recurso.Max_Concurrentes >= 6 ? 'text-accent-red' : 'text-text-primary'
+                        'font-sans font-semibold',
+                        recurso.Max_Concurrentes >= 6 ? 'text-text-primary' : 'text-text-secondary'
                       )}>
                         {recurso.Max_Concurrentes}
                       </span>
@@ -144,11 +144,11 @@ export default function RecursosTable({ recursos }: RecursosTableProps) {
                     <td className="px-6 py-4">
                       <span
                         className={clsx(
-                          'px-3 py-1 rounded text-xs font-rajdhani font-bold uppercase border',
-                          status === 'critical' && 'border-accent-red text-accent-red bg-accent-red/20',
-                          status === 'warning' && 'border-accent-orange text-accent-orange bg-accent-orange/20',
-                          status === 'normal' && 'border-accent-cyan text-accent-cyan bg-accent-cyan/20',
-                          status === 'good' && 'border-accent-green text-accent-green bg-accent-green/20'
+                          'px-3 py-1 rounded text-xs font-sans font-semibold uppercase border',
+                          status === 'critical' && 'border-text-primary text-text-primary bg-bg-tertiary',
+                          status === 'warning' && 'border-text-secondary text-text-secondary bg-bg-secondary',
+                          status === 'normal' && 'border-border-color text-text-secondary bg-white',
+                          status === 'good' && 'border-border-color text-text-secondary bg-white'
                         )}
                       >
                         {recurso.Estado}

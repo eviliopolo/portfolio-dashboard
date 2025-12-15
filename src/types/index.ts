@@ -70,6 +70,7 @@ export interface MetricasGraficos {
   [key: string]: string | number | undefined;
 }
 
+
 export interface ExcelData {
   resumen: KPIData[];
   proyectos: Proyecto[];
