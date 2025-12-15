@@ -1,0 +1,19 @@
+INSTRUCCIONES PARA COLOCAR EL ARCHIVO EXCEL
+============================================
+
+1. Coloca el archivo DASHBOARD_PORTAFOLIO.xlsx en esta carpeta (public/data/)
+
+2. Asegúrate de que el archivo tenga las siguientes hojas:
+   - Dashboard_Resumen
+   - Proyectos
+   - Recursos
+   - Matriz_Horas
+   - Tareas
+   - Solapamientos
+   - Timeline
+   - Metricas_Graficos
+
+3. El nombre del archivo debe ser exactamente: DASHBOARD_PORTAFOLIO.xlsx
+
+4. Una vez colocado el archivo, ejecuta: npm run dev
+

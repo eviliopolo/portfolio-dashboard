@@ -1,0 +1,95 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Rajdhani', sans-serif;
+  background: #0a0a0a;
+  color: #e6e6e6;
+  overflow-x: hidden;
+}
+
+/* Efecto de escaneo */
+@keyframes scan {
+  0%, 100% { 
+    opacity: 0.1; 
+    transform: translateY(0);
+  }
+  50% { 
+    opacity: 0.3; 
+    transform: translateY(100vh);
+  }
+}
+
+.scan-line {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(0, 210, 255, 0.8), 
+    transparent
+  );
+  animation: scan 3s linear infinite;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* Glow text */
+.glow-text {
+  text-shadow: 
+    0 0 10px rgba(0, 210, 255, 0.8),
+    0 0 20px rgba(0, 210, 255, 0.6),
+    0 0 30px rgba(0, 210, 255, 0.4);
+}
+
+/* Grid background */
+.cyber-grid {
+  background-image: 
+    linear-gradient(rgba(0, 210, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 210, 255, 0.05) 1px, transparent 1px);
+  background-size: 50px 50px;
+}
+
+/* Scrollbar personalizado */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0a0a0a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #00d2ff;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #00b8e6;
+}
+
+/* Animación de pulso para alertas */
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(225, 97, 98, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(225, 97, 98, 0.8), 0 0 30px rgba(225, 97, 98, 0.6);
+  }
+}
+
+.pulse-critical {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
