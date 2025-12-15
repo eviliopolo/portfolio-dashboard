@@ -1,5 +1,4 @@
 import { motion } from 'framer-motion';
-import Header from './components/layout/Header';
 import DashboardGerencial from './components/dashboard/DashboardGerencial';
 import { useExcelData } from './hooks/useExcelData';
 
@@ -52,11 +51,8 @@ function App() {
       {/* Efecto de escaneo */}
       <div className="scan-line" />
 
-      {/* Header */}
-      <Header />
-
       {/* Main Content */}
-      <main className="container mx-auto p-6 space-y-12 pb-12">
+      <main className="container mx-auto p-6 space-y-12 pb-12 pt-6">
         {/* Dashboard Gerencial - Informe Ejecutivo */}
         {data.proyectos && data.recursos && data.matriz && (
           <motion.section
