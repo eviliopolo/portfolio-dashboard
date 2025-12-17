@@ -1,8 +1,14 @@
 import { motion } from 'framer-motion';
-import { Briefcase, Clock, Users } from 'lucide-react';
+import { Briefcase, Clock, Users, AlertTriangle, Download, Copy } from 'lucide-react';
 import { ExcelData } from '../../types';
 import { formatDate, formatNumber } from '../../utils/formatters';
 import { getProjectColor } from '../../utils/formatters';
+import CapacityCard from '../analytics/CapacityCard';
+import PersonaCapacityCard from '../recursos/PersonaCapacityCard';
+import RecursosBarChart from '../charts/RecursosBarChart';
+import ProyectosTimeline from '../charts/ProyectosTimeline';
+import { generarJSONRecursos, descargarJSON, copiarJSONAlPortapapeles } from '../../utils/exportJSON';
+import { useState } from 'react';
 
 interface DashboardGerencialProps {
   data: ExcelData;
@@ -12,6 +18,48 @@ export default function DashboardGerencial({ data }: DashboardGerencialProps) {
   const proyectos = data.proyectos || [];
   const recursos = data.recursos || [];
   const matriz = data.matriz || [];
+  const capacidadEquipo = data.capacidadEquipo;
+  const recursosCapacidad = data.recursosCapacidad || [];
+  const [copiado, setCopiado] = useState(false);
+
+  // Ordenar recursos: primero sobrecargados, luego equilibrio, luego disponibles
+  const recursosOrdenados = [...recursosCapacidad].sort((a, b) => {
+    const prioridad = {
+      'sobrecargado': 1,
+      'equilibrio': 2,
+      'disponible': 3
+    };
+    return (prioridad[a.estado] || 99) - (prioridad[b.estado] || 99);
+  });
+
+  const handleDescargarJSON = () => {
+    if (recursosCapacidad.length > 0) {
+      const jsonData = generarJSONRecursos(recursosCapacidad);
+      const fecha = new Date().toISOString().split('T')[0];
+      descargarJSON(jsonData, `recursos-proyectos-${fecha}.json`);
+    }
+  };
+
+  const handleCopiarJSON = async () => {
+    if (recursosCapacidad.length > 0) {
+      const jsonData = generarJSONRecursos(recursosCapacidad);
+      try {
+        await copiarJSONAlPortapapeles(jsonData);
+        setCopiado(true);
+        setTimeout(() => setCopiado(false), 2000);
+      } catch (error) {
+        console.error('Error copiando al portapapeles:', error);
+      }
+    }
+  };
+
+  // DEBUG temporal
+  console.log('DEBUG - Datos de capacidadEquipo:', capacidadEquipo);
+  console.log('DEBUG - Proyectos con estado/prioridad:', proyectos.map(p => ({ 
+    proyecto: p.Proyecto, 
+    estado: p.Estado, 
+    prioridad: p.Prioridad 
+  })));
 
   // Calcular ocupación de recursos por proyecto
   const ocupacionPorProyecto = proyectos.map(proyecto => {
@@ -46,10 +94,39 @@ export default function DashboardGerencial({ data }: DashboardGerencialProps) {
     };
   });
 
-  // Calcular totales
-  const totalProyectos = proyectos.length;
-  const totalHoras = ocupacionPorProyecto.reduce((sum, p) => sum + (p.horasTotales || 0), 0);
+  // Calcular totales y métricas de criticidad
   const totalRecursos = recursos.length;
+
+  // Análisis de criticidad
+  const proyectosCriticos = proyectos.filter(p => 
+    p.Estado === 'Atrasado' || 
+    p.Prioridad === 'Critico' ||
+    p.Prioridad === 'Crítico'
+  ).length;
+  const proyectosAlto = proyectos.filter(p => p.Prioridad === 'Alta').length;
+  
+  // Calcular proyectos próximos a vencer (30 días)
+  const hoy = new Date();
+  const proximasEntregas = proyectos.filter(proyecto => {
+    if (!proyecto.Entrega) return false;
+    const fechaEntrega = new Date(proyecto.Entrega);
+    const diasRestantes = Math.ceil((fechaEntrega.getTime() - hoy.getTime()) / (1000 * 60 * 60 * 24));
+    return diasRestantes >= 0 && diasRestantes <= 30;
+  }).length;
+
+  const recursosSobrecargados = recursos.filter(r => r.Ocupacion > 100).length;
+
+  // Ordenar ocupación por proyecto por criticidad
+  const ocupacionOrdenada = ocupacionPorProyecto.sort((a, b) => {
+    // Orden de prioridad: Crítico/Atrasado > Alta prioridad > En_Progreso > Otros
+    const getPrioridadScore = (item: any) => {
+      if (item.estado === 'Atrasado' || item.prioridad === 'Critico' || item.prioridad === 'Crítico') return 4;
+      if (item.prioridad === 'Alta') return 3;
+      if (item.estado === 'En_Progreso') return 2;
+      return 1;
+    };
+    return getPrioridadScore(b) - getPrioridadScore(a);
+  });
 
   return (
     <div className="space-y-8">
@@ -60,39 +137,71 @@ export default function DashboardGerencial({ data }: DashboardGerencialProps) {
         </h1>
         <p className="text-sm text-text-muted mb-8">Resumen ejecutivo</p>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-bg-card p-8 rounded-xl border-2 border-border-color shadow-elegant">
-            <div className="flex items-start justify-between">
-              <div>
-                <p className="text-xs text-text-muted font-medium uppercase tracking-wide mb-2">Total Proyectos</p>
-                <p className="text-3xl font-sans font-bold text-text-primary">{totalProyectos}</p>
-              </div>
-              <div className="p-3 bg-bg-tertiary rounded-lg border border-border-light">
-                <Briefcase className="w-5 h-5 text-text-secondary" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-bg-card p-8 rounded-xl border-2 border-border-color shadow-elegant">
-            <div className="flex items-start justify-between">
-              <div>
-                <p className="text-xs text-text-muted font-medium uppercase tracking-wide mb-2">Horas Totales</p>
-                <p className="text-3xl font-sans font-bold text-text-primary">{formatNumber(totalHoras)}</p>
-              </div>
-              <div className="p-3 bg-bg-tertiary rounded-lg border border-border-light">
-                <Clock className="w-5 h-5 text-text-secondary" />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {/* Proyectos Críticos */}
+          <div className="bg-white p-6 rounded-xl border-2 border-border-color shadow-elegant relative">
+            <div className="absolute left-0 top-0 bottom-0 w-1 bg-red-500 rounded-l-xl"></div>
+            <div className="pl-4">
+              <div className="flex items-start justify-between">
+                <div>
+                  <p className="text-xs text-text-muted font-medium uppercase tracking-wide mb-2">Críticos</p>
+                  <p className="text-3xl font-sans font-bold text-text-primary">{proyectosCriticos}</p>
+                  <p className="text-xs text-text-muted mt-1">Atrasados</p>
+                </div>
+                <div className="p-2 bg-bg-tertiary rounded-lg">
+                  <AlertTriangle className="w-5 h-5 text-red-600" />
+                </div>
               </div>
             </div>
           </div>
 
-          <div className="bg-bg-card p-8 rounded-xl border-2 border-border-color shadow-elegant">
-            <div className="flex items-start justify-between">
-              <div>
-                <p className="text-xs text-text-muted font-medium uppercase tracking-wide mb-2">Recursos Totales</p>
-                <p className="text-3xl font-sans font-bold text-text-primary">{totalRecursos}</p>
+          {/* Proyectos Alta Prioridad */}
+          <div className="bg-white p-6 rounded-xl border-2 border-border-color shadow-elegant relative">
+            <div className="absolute left-0 top-0 bottom-0 w-1 bg-orange-500 rounded-l-xl"></div>
+            <div className="pl-4">
+              <div className="flex items-start justify-between">
+                <div>
+                  <p className="text-xs text-text-muted font-medium uppercase tracking-wide mb-2">Alta Prioridad</p>
+                  <p className="text-3xl font-sans font-bold text-text-primary">{proyectosAlto}</p>
+                  <p className="text-xs text-text-muted mt-1">Requieren atención</p>
+                </div>
+                <div className="p-2 bg-bg-tertiary rounded-lg">
+                  <Briefcase className="w-5 h-5 text-orange-600" />
+                </div>
               </div>
-              <div className="p-3 bg-bg-tertiary rounded-lg border border-border-light">
-                <Users className="w-5 h-5 text-text-secondary" />
+            </div>
+          </div>
+
+          {/* Entregas Próximas */}
+          <div className="bg-white p-6 rounded-xl border-2 border-border-color shadow-elegant relative">
+            <div className="absolute left-0 top-0 bottom-0 w-1 bg-blue-500 rounded-l-xl"></div>
+            <div className="pl-4">
+              <div className="flex items-start justify-between">
+                <div>
+                  <p className="text-xs text-text-muted font-medium uppercase tracking-wide mb-2">Entregas 30 días</p>
+                  <p className="text-3xl font-sans font-bold text-text-primary">{proximasEntregas}</p>
+                  <p className="text-xs text-text-muted mt-1">Próximas</p>
+                </div>
+                <div className="p-2 bg-bg-tertiary rounded-lg">
+                  <Clock className="w-5 h-5 text-blue-600" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Recursos Sobrecargados */}
+          <div className="bg-white p-6 rounded-xl border-2 border-border-color shadow-elegant relative">
+            <div className="absolute left-0 top-0 bottom-0 w-1 bg-purple-500 rounded-l-xl"></div>
+            <div className="pl-4">
+              <div className="flex items-start justify-between">
+                <div>
+                  <p className="text-xs text-text-muted font-medium uppercase tracking-wide mb-2">Recursos Críticos</p>
+                  <p className="text-3xl font-sans font-bold text-text-primary">{recursosSobrecargados}</p>
+                  <p className="text-xs text-text-muted mt-1">Sobrecargados</p>
+                </div>
+                <div className="p-2 bg-bg-tertiary rounded-lg">
+                  <Users className="w-5 h-5 text-purple-600" />
+                </div>
               </div>
             </div>
           </div>
@@ -138,9 +247,10 @@ export default function DashboardGerencial({ data }: DashboardGerencialProps) {
               </tr>
             </thead>
             <tbody>
-              {ocupacionPorProyecto.map((item, index) => {
+              {ocupacionOrdenada.map((item, index) => {
                 const color = getProjectColor(item.proyecto);
                 const isAtrasado = item.estado === 'Atrasado';
+                const isCritico = item.prioridad === 'Critico' || item.prioridad === 'Crítico';
 
                 return (
                   <motion.tr
@@ -200,7 +310,7 @@ export default function DashboardGerencial({ data }: DashboardGerencialProps) {
                     </td>
                     <td className="px-6 py-4 text-center">
                       <span className={`font-sans text-sm ${
-                        isAtrasado ? 'text-text-primary font-semibold' : 'text-text-secondary'
+                        isAtrasado || isCritico ? 'text-text-primary font-semibold' : 'text-text-secondary'
                       }`}>
                         {formatDate(item.fechaEntrega)}
                       </span>
@@ -221,7 +331,9 @@ export default function DashboardGerencial({ data }: DashboardGerencialProps) {
                     <td className="px-6 py-4 text-center">
                       <span
                         className={`px-2.5 py-1 rounded-md text-xs font-sans font-medium ${
-                          item.prioridad === 'Alta'
+                          item.prioridad === 'Critico' || item.prioridad === 'Crítico'
+                            ? 'text-red-700 bg-red-50 border-red-300'
+                            : item.prioridad === 'Alta'
                             ? 'text-orange-700 bg-orange-50 border-orange-300'
                             : item.prioridad === 'Media'
                             ? 'text-yellow-700 bg-yellow-50 border-yellow-300'
@@ -239,6 +351,17 @@ export default function DashboardGerencial({ data }: DashboardGerencialProps) {
         </div>
       </div>
 
+      {/* Card de Capacidad vs Demanda */}
+      {capacidadEquipo ? (
+        <CapacityCard capacidadEquipo={capacidadEquipo} />
+      ) : (
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+          <p className="text-yellow-800 text-sm">
+            ⚠️ No se encontraron datos de capacidad. Verificar que las hojas "Horas" (columna I) y "Matriz_Horas" contengan los totales.
+          </p>
+        </div>
+      )}
+
       {/* Resumen de ocupación de recursos */}
       <div className="bg-bg-secondary p-8 rounded-xl border-2 border-border-color shadow-elegant">
         <h2 className="text-lg font-sans font-semibold text-text-primary mb-6">
@@ -246,8 +369,8 @@ export default function DashboardGerencial({ data }: DashboardGerencialProps) {
         </h2>
         
         <div className="space-y-3">
-          {ocupacionPorProyecto.map((item, index) => {
-            const porcentaje = (item.recursosAsignados / totalRecursos) * 100;
+          {ocupacionOrdenada.map((item, index) => {
+            const porcentaje = totalRecursos > 0 ? (item.recursosAsignados / totalRecursos) * 100 : 0;
 
             return (
               <div
@@ -280,6 +403,53 @@ export default function DashboardGerencial({ data }: DashboardGerencialProps) {
           })}
         </div>
       </div>
+
+      {/* Gráfica de Barras Horizontales de Recursos */}
+      {recursosCapacidad && recursosCapacidad.length > 0 && (
+        <RecursosBarChart recursos={recursosCapacidad} />
+      )}
+
+      {/* Capacidad por Persona */}
+      {recursosCapacidad && recursosCapacidad.length > 0 && (
+        <div>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-sans font-semibold text-text-primary">
+              Capacidad por Colaborador
+            </h2>
+            <div className="flex gap-3">
+              <button
+                onClick={handleCopiarJSON}
+                className="flex items-center gap-2 px-4 py-2 bg-white border-2 border-border-color rounded-lg hover:bg-bg-secondary transition-colors shadow-sm"
+              >
+                <Copy className="w-4 h-4" />
+                <span className="text-sm font-medium">
+                  {copiado ? '¡Copiado!' : 'Copiar JSON'}
+                </span>
+              </button>
+              <button
+                onClick={handleDescargarJSON}
+                className="flex items-center gap-2 px-4 py-2 bg-text-primary text-white rounded-lg hover:bg-opacity-90 transition-colors shadow-sm"
+              >
+                <Download className="w-4 h-4" />
+                <span className="text-sm font-medium">Descargar JSON</span>
+              </button>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {recursosOrdenados.map((recurso, index) => (
+              <PersonaCapacityCard 
+                key={recurso.nombre} 
+                recurso={recurso} 
+                index={index}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Timeline de Proyectos */}
+      <ProyectosTimeline />
+
     </div>
   );
 }

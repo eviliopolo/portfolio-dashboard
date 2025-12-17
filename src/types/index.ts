@@ -71,6 +71,47 @@ export interface MetricasGraficos {
 }
 
 
+export interface AnalisisCapacidad {
+  horasDisponibles: number;
+  horasRequeridas: number;
+  porcentajeOcupacion: number;
+  deficit: number;
+  estado: 'sobrecarga' | 'equilibrio' | 'disponible';
+}
+
+export interface ProyectoHoras {
+  proyecto: string;
+  horas: number;
+}
+
+export interface RecursoCapacidad {
+  nombre: string;
+  horasDisponibles: number;
+  horasAsignadas: number;
+  ocupacion: number;
+  sobrecarga: number;
+  estado: 'sobrecargado' | 'equilibrio' | 'disponible';
+  proyectos: ProyectoHoras[];
+}
+
+export interface JSONRecursosExport {
+  fecha_generacion: string;
+  total_recursos: number;
+  recursos: Array<{
+    recurso: string;
+    capacidad: number;
+    horas_asignadas_total: number;
+    ocupacion: number;
+    sobrecarga: number;
+    estado: string;
+    proyectos_asignados: Array<{
+      proyecto: string;
+      horas_asignadas: number;
+    }>;
+    total_proyectos: number;
+  }>;
+}
+
 export interface ExcelData {
   resumen: KPIData[];
   proyectos: Proyecto[];
@@ -80,5 +121,8 @@ export interface ExcelData {
   solapamientos: Solapamiento[];
   timeline: TimelineData[];
   metricas: MetricasGraficos[];
+  capacidadEquipo?: AnalisisCapacidad;
+  recursosCapacidad?: RecursoCapacidad[];
+  jsonRecursos?: JSONRecursosExport;
 }
 
