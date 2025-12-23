@@ -259,8 +259,8 @@ export default function ProyectosTimeline() {
                     className="absolute top-0 bottom-0 w-px bg-red-600 z-20 pointer-events-auto"
                     style={{ left: `${posHoy}%` }}
                   >
-                    {/* Etiqueta HOY con fecha completa - ENCIMA del eje X */}
-                    <div className="absolute -top-24 left-1/2 -translate-x-1/2 whitespace-nowrap">
+                    {/* Etiqueta HOY con fecha completa */}
+                    <div className="absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap">
                       <div className="bg-red-600 text-white px-3 py-1.5 rounded-md shadow-lg border-2 border-red-700">
                         <div className="text-[10px] font-bold uppercase tracking-wide">HOY</div>
                         <div className="text-xs font-semibold">
